@@ -15,6 +15,8 @@
  */
 'use strict';
 
+const log = require('./log')(':logout');
+
 module.exports = function (keycloak, logoutUrl) {
   return function logout (request, response, next) {
     if (request.url !== logoutUrl) {
@@ -33,6 +35,7 @@ module.exports = function (keycloak, logoutUrl) {
     let redirectUrl = request.protocol + '://' + host + (port === '' ? '' : ':' + port) + '/';
     let keycloakLogoutUrl = keycloak.logoutUrl(redirectUrl);
 
+    log('redirect %s', keycloakLogoutUrl);
     response.redirect(keycloakLogoutUrl);
   };
 };

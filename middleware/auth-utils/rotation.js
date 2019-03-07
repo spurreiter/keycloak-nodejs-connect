@@ -18,6 +18,7 @@ const URL = require('url');
 const http = require('http');
 const https = require('https');
 const jwkToPem = require('jwk-to-pem');
+const log = require('../log')(':auth-utils:rotation');
 
 /**
  * Construct a Rotation instance
@@ -46,6 +47,7 @@ Rotation.prototype.retrieveJWKs = function retrieveJWKs (callback) {
       response.on('data', (d) => (json += d.toString()));
       response.on('end', () => {
         const data = JSON.parse(json);
+        log('fetch %j %j', options, data);
         if (data.error) reject(data);
         else resolve(data);
       });

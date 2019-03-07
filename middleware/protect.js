@@ -16,6 +16,7 @@
 'use strict';
 
 const UUID = require('./../uuid');
+const log = require('./log')(':protect');
 
 function forceLogin (keycloak, request, response) {
   let host = request.hostname;
@@ -32,6 +33,8 @@ function forceLogin (keycloak, request, response) {
 
   let uuid = UUID();
   let loginURL = keycloak.loginUrl(uuid, redirectUrl);
+
+  log('forceLogin %s', redirectUrl);
   response.redirect(loginURL);
 }
 
@@ -53,13 +56,14 @@ module.exports = function (keycloak, spec) {
       if (!guard || guard(request.kauth.grant.access_token, request, response)) {
         return next();
       }
-
+      log('accessDenied');
       return keycloak.accessDenied(request, response, next);
     }
 
     if (keycloak.redirectToLogin(request)) {
       forceLogin(keycloak, request, response);
     } else {
+      log('accessDenied');
       return keycloak.accessDenied(request, response, next);
     }
   };

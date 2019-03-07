@@ -32,6 +32,7 @@
   },
   "license": "Apache-2.0",
   "dependencies": {
+    "debug": "^4.1.1",
     "jwk-to-pem": "^2.0.0"
   },
   "devDependencies": {

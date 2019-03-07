@@ -15,6 +15,8 @@
  */
 'use strict';
 
+const log = require('./log')(':admin');
+
 function Admin (keycloak, url) {
   this._keycloak = keycloak;
   if (url[ url.length - 1 ] !== '/') {
@@ -39,7 +41,9 @@ function adminLogout (request, response, keycloak) {
     let parts = data.split('.');
     try {
       payload = JSON.parse(Buffer.from(parts[1], 'base64').toString());
+      log('adminLogout %j', payload);
     } catch (e) {
+      log('%j', e);
       response.status(400).end();
       return;
     }
@@ -74,8 +78,16 @@ function adminNotBefore (request, response, keycloak) {
   });
 
   request.on('end', function () {
+    let payload;
     let parts = data.split('.');
-    let payload = JSON.parse(Buffer.from(parts[1], 'base64').toString());
+    try {
+      payload = JSON.parse(Buffer.from(parts[1], 'base64').toString());
+      log('adminNotBefore %j', payload);
+    } catch (e) {
+      log('%j', e);
+      response.status(400).end();
+      return;
+    }
     if (payload.action === 'PUSH_NOT_BEFORE') {
       keycloak.grantManager.notBefore = payload.notBefore;
       response.send('ok');
@@ -90,6 +102,8 @@ module.exports = function (keycloak, adminUrl) {
   }
   let urlLogout = url + 'k_logout';
   let urlNotBefore = url + 'k_push_not_before';
+
+  log('adminUrl %s', adminUrl);
 
   return function adminRequest (request, response, next) {
     switch (request.url) {

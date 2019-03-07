@@ -16,9 +16,12 @@
 'use strict';
 
 const URL = require('url');
+const log = require('./log')(':post-auth');
 
 module.exports = function (keycloak) {
   return function postAuth (request, response, next) {
+    log('query %j', request.query);
+
     if (!request.query.auth_callback) {
       return next();
     }
@@ -46,11 +49,13 @@ module.exports = function (keycloak) {
           keycloak.authenticated(request);
         } catch (err) {
           console.log(err);
+          log('Error: %s', err)
         }
         response.redirect(cleanUrl);
       }).catch((err) => {
         keycloak.accessDenied(request, response, next);
         console.error('Could not obtain grant code: ' + err);
+        log('Could not obtain grant code: %s', err)
       });
   };
 };

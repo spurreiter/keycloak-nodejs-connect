@@ -22,7 +22,8 @@ const crypto = require('crypto');
 const querystring = require('querystring');
 const Grant = require('./grant');
 const Token = require('./token');
-var Rotation = require('./rotation');
+const Rotation = require('./rotation');
+const log = require('../log')(':auth-utils:grant-manager');
 
 /**
  * Construct a grant manager.
@@ -301,6 +302,7 @@ GrantManager.prototype.userInfo = function userInfo (token, callback) {
       let json = '';
       response.on('data', (d) => (json += d.toString()));
       response.on('end', () => {
+        log('userInfo %j %s', options, json);
         const data = JSON.parse(json);
         if (data.error) reject(data);
         else resolve(data);
@@ -516,6 +518,7 @@ const fetch = (manager, handler, options, params) => {
       let json = '';
       response.on('data', (d) => (json += d.toString()));
       response.on('end', () => {
+        log('fetch %j %s', options, json);
         handler(resolve, reject, json);
       });
     });
