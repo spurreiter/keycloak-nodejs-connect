@@ -53,7 +53,7 @@ test('Config#configure with realm-public-key', (t) => {
     t.error(err, 'generated keypair successfully');
     let plainKey = keyz.publicKeyPem.split(/\r?\n/).filter(item => item && !item.startsWith('---')).join('');
     let cfg = new Config({ 'realm-public-key': plainKey });
-    t.equal(cfg.publicKey, keyz.publicKeyPem.replace(/\r/g, ''));
+    t.equal(cfg.publicKey, keyz.publicKeyPem.replace(/RSA PUBLIC KEY/g, 'PUBLIC KEY').replace(/\r/g, '') + '\n');
     t.end();
   });
 });
@@ -64,7 +64,7 @@ test('Config#configure with realmPublicKey', (t) => {
     t.error(err, 'generated keypair successfully');
     let plainKey = keyz.publicKeyPem.split(/\r?\n/).filter(item => item && !item.startsWith('---')).join('');
     let cfg = new Config({ realmPublicKey: plainKey });
-    t.equal(cfg.publicKey, keyz.publicKeyPem.replace(/\r/g, ''));
+    t.equal(cfg.publicKey, keyz.publicKeyPem.replace(/RSA PUBLIC KEY/g, 'PUBLIC KEY').replace(/\r/g, '') + '\n');
     t.end();
   });
 });
