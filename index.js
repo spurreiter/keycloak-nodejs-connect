@@ -28,6 +28,8 @@ var GrantAttacher = require('./middleware/grant-attacher');
 var Protect = require('./middleware/protect');
 var Enforcer = require('./middleware/enforcer');
 
+const log = require('./middleware/log')(':middleware');
+
 /**
  * Instantiate a Keycloak.
  *
@@ -302,6 +304,7 @@ Keycloak.prototype.getGrant = function (request, response) {
   }
 
   var grantData = rawData;
+  log('getGrant', grantData && Object.keys(grantData))
   if (typeof (grantData) === 'string') {
     grantData = JSON.parse(grantData);
   }
@@ -313,13 +316,14 @@ Keycloak.prototype.getGrant = function (request, response) {
         self.storeGrant(grant, request, response);
         return grant;
       })
-      .catch(() => { return Promise.reject(); });
+      .catch(err => { return Promise.reject(err); }); // pass on error
   }
 
   return Promise.reject();
 };
 
 Keycloak.prototype.storeGrant = function (grant, request, response) {
+  log('storeGrant') //, grant)
   if (this.stores.length < 2 || BearerStore.get(request)) {
     // cannot store bearer-only, and should not store if grant is from the
     // authorization header

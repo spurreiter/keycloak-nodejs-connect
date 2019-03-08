@@ -15,12 +15,19 @@
  */
 'use strict';
 
+const _get = require('./_get');
+const log = require('./log')(':grant-attacher');
+
 module.exports = function (keycloak) {
   return function grantAttacher (request, response, next) {
     keycloak.getGrant(request, response)
       .then(grant => {
+        log('grant %j', _get(grant, 'access_token.content'))
         request.kauth.grant = grant;
       })
-      .then(next).catch(() => next());
+      .then(next).catch(err => {
+        log('%s', err)
+        next()
+      });
   };
 };

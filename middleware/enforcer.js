@@ -15,6 +15,7 @@
  */
 'use strict';
 
+const _get = require('./_get');
 const log = require('./log')(':enforcer');
 
 function handlePermissions (permissions, callback) {
@@ -91,7 +92,7 @@ Enforcer.prototype.enforce = function enforce (expectedPermissions) {
     });
 
     if (request.kauth && request.kauth.grant) {
-      log('request.kauth.grant %j', request.kauth.grant);
+      log('request.kauth.grant %j %s %j', expectedPermissions, _get(request, 'kauth.grant.access_token.clientId'), _get(request, 'kauth.grant.access_token.content'));
       if (handlePermissions(expectedPermissions, function (resource, scope) {
         if (!request.kauth.grant.access_token.hasPermission(resource, scope)) {
           return false;

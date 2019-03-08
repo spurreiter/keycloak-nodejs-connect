@@ -397,6 +397,7 @@ GrantManager.prototype.validateGrant = function validateGrant (grant) {
     Promise.all(promises).then(() => {
       resolve(grant);
     }).catch((err) => {
+      log('%s', err)
       reject(new Error(err.message));
     });
   });
@@ -518,7 +519,7 @@ const fetch = (manager, handler, options, params) => {
       let json = '';
       response.on('data', (d) => (json += d.toString()));
       response.on('end', () => {
-        log('fetch %j %s', options, json);
+        log('fetch %s %s', options.href, decodeURIComponent(data), json);
         handler(resolve, reject, json);
       });
     });
